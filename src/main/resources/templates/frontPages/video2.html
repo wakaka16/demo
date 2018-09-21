@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+    <title>拍照</title>
+    <script src="http://libs.baidu.com/jquery/1.6.4/jquery.min.js"></script>
+    <script language="javascript" type="text/javascript">
+      window.addEventListener('DOMContentLoaded', function () {
+        'use strict';
+        var video = document.querySelector('video');
+
+        function successCallback(stream) {
+          // Set the source of the video element with the stream from the camera
+          if (video.mozSrcObject !== undefined) {
+            video.mozSrcObject = stream;
+          } else {
+            video.src = (window.URL &window.URL.createObjectURL(stream)) || stream;
+          }
+          video.play();
+        }
+
+        function errorCallback(error) {
+          console.error("An error occurred: [CODE" + error.code + "]");
+          // Display a friendly "sorry" message to the user
+        }
+
+        navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
+        window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
+
+        // Call the getUserMedia method with our callback functions
+        if (navigator.getUserMedia) {
+          navigator.getUserMedia({ video: true }, successCallback, errorCallback);
+        } else {
+          console.log('Native web camera streaming (getUserMedia) not supported in this browser.');
+          // Display a friendly "sorry" message to the user
+        }
+      }, false);
+
+    </script>
+  </head>
+<body>
+
+<video id="myVideo" autoplay="autoplay" Width="400px" Height="300px"></video>
+<br />
+<input type="button" value="拍照" /><br />
+拍照結果：
+<div id="result"></div>
+<script type="text/javascript">
+  $(document).ready(init);
+  function init() {
+    //Google Chrome要用webkitGetUserMedia函式
+    //navigator.webkitGetUserMedia("video", success);  //显示影像
+
+    //定义button
+    $("input[type='button']").click(function () {
+      shoot(); //执行拍照
+    });
+  }
+
+  function success(stream) {
+    $("#myVideo").attr("src", window.webkitURL.createObjectURL(stream));
+  }
+
+  //執行拍照
+  function shoot() {
+    var video = $("#myVideo")[0];
+    var canvas = capture(video);
+
+    $("#result").empty();
+    $("#result").append(canvas); //呈現图像(拍照結果)
+
+    var imgData = canvas.toDataURL("image/jpg");
+    var base64String = imgData.substr(22); //取得base64字串
+
+    //上傳，儲存图片
+    $.ajax({
+      url: "uploadImagerReYo",
+      type: "post",
+      //base64String
+      data: { urls: imgData  },
+      async: true,
+      success: function (htmlVal) {
+        alert("另存图片成功！");
+      }, error: function (e) {
+        alert(e.responseText); //alert错误信息
+      }
+    });
+  }
+
+  //从video元素抓取图像到canvas
+  function capture(video) {
+    var canvas = document.createElement('canvas'); //建立canvas js DOM元素
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    var ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0);
+    return canvas;
+  }
+
+</script>
+</body>
+</html>

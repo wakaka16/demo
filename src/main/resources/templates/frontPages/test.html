@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Title</title>
+</head>
+<body>
+<div >值</div>
+<button>按钮</button>
+
+
+<script th:src="@{/js/jquery-3.3.1.js}"></script>
+<!--<script th:src="@{https://cdn.bootcss.com/jquery/1.10.2/jquery.min.js}"></script>-->
+
+</body>
+<script>
+    $(document).ready(function(){
+        data:
+            
+        $("button").click(function () {
+            //$.get(URL,data,function(data,status,xhr),dataType)
+            //url、发送数据、规定当请求成功时运行的函数、发送数据的类型（表单、json。。。）
+            $.get("/test/ajax",function (response,status) {
+                //response:[object object]
+                //状态:success
+                alert("response:"+response+"\n状态："+status);
+                console.log(response);
+                alert(response.code);//000000
+                alert(response.message);//操作成功
+                alert(response.data.name);//lisi
+            });
+        });
+    });
+</script>
+
+</html>
