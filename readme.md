@@ -1,1 +1,1 @@
-# 整合的一个练习项目
+# springboot+mybatis
